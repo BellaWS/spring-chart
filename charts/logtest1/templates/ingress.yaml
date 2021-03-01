@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    appVersion: {{ .Chart.AppVersion}}
+    chartVersion: {{ .Chart.Version}}
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - host: "{{ .Chart.Name }}.{{ .Values.global.host }}"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ .Chart.Name }}
+              servicePort: {{ .Values.service.port }}

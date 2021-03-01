@@ -1,0 +1,77 @@
+{{- if and .Values.global.lion.init .Values.lion.init }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Chart.Name }}-lion-init"
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,pre-rollback
+    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": before-hook-creation
+  labels:
+    app: {{ .Chart.Name }}
+    appVersion: {{ .Chart.AppVersion }}
+    chartVersion: {{ .Chart.Version }}
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 3600
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      name: "{{ .Chart.Name }}-lion-init"
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      restartPolicy: Never
+      containers:
+      - args:
+        - -l
+        - -c
+        - ./init.sh
+        command:
+        - /bin/bash
+        env:
+        - name: LION_HOST
+          value: {{ $.Values.global.lion.url | quote }}
+        - name: BASE_HOST
+          value: {{ $.Values.global.host | quote }}
+        - name: LION_USERNAME
+          value: {{ $.Values.global.lion.username | quote }}
+        - name: LION_PASSWORD
+          value: {{ $.Values.global.lion.password | quote }}
+        - name: LION_ENV
+          value: {{ $.Values.global.lion.env | quote }}
+        - name: LION_DIR
+          value: /lion
+        - name: LION_APP_VERSION
+          value: {{ .Chart.AppVersion | quote }}
+        - name: LION_ACTION_USER
+          value: {{ $.Values.global.executor | quote}}
+        - name: LION_PRODUCT
+          value: {{ $.Values.global.lion.product }}
+    {{- range $key, $value := $.Values.lion.envs }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+    {{- end }}
+        image: "{{ $.Values.global.harbor.host}}/op/lion-init:{{ $.Values.global.lion.tag }}"
+        imagePullPolicy: IfNotPresent
+        name: "{{ .Chart.Name }}-lion-init"
+        resources:
+          limits:
+            cpu: 2048m
+            memory: 4Gi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+          {{- if .Files.Glob "files/lion/*.{properties}" }}
+          - name: lion-files
+            mountPath: /lion
+          {{- end}}
+      volumes:
+        {{- if .Files.Glob "files/lion/*.{properties}" }}
+        - name: lion-files
+          configMap:
+            name: "{{ .Chart.Name }}-lion-init-configmap"
+        {{- end }}
+{{- end }}

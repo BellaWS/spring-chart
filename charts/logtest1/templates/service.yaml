@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    appVersion: {{ .Chart.AppVersion | quote }}
+    chartVersion: {{ .Chart.Version | quote }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: {{ .Values.service.port }}
+      protocol: TCP
+      name: tcp-port1
+    - port: 8099
+      targetPort: {{ .Values.service.port2 }}
+      protocol: TCP
+      name: tcp-port2
+  selector:
+    app: {{ .Chart.Name }}

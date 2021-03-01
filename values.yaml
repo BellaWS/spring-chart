@@ -1,0 +1,33 @@
+global:
+  lion:
+    init: false
+    # 【ecp】lion url http://lion9001.eniot.io:8080
+    url: "http://10.27.20.20:8090"
+    # 【ecp】更新lion数据需要的用户名
+    username: "lion_test"
+    # 【ecp】更新lion数据需要的用户密码
+    password: "lion_test"
+    #【ecp】 生产为 PRODUCT/PPEl
+    env: "beta"
+    # lion上业务分支名称
+    product: "测试"
+  host: "beta-kube-ingress-cn4.eniot.io"
+  harbor:
+    #harbor.eniot.io
+    host: harbor.eniot.io
+  job:
+    enabled: "@TODO"
+
+environment:
+  envName: "@TODO"
+
+logtest1:
+  weight: 1
+  persistence:
+    # 已经使用非Chart部署过PVC则改为false，需要通过Chart进行创建改为true
+    enabled: true
+    # minio应用使用的pvc名称，默认为minio
+    name: logtest1
+    size: 1Gi
+    # 文件存储
+  storageClassName: "azure-file-hdd"

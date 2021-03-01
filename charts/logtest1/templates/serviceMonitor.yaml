@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  endpoints:
+    - honorLabels: true
+      interval: 60s
+      path: /metrics/prometheus
+      port: tcp-port2
+  jobLabel: k8s-app
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}

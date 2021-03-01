@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    appVersion: {{ .Chart.AppVersion | quote }}
+    chartVersion: {{ .Chart.Version | quote }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        appVersion: {{ .Chart.AppVersion | quote }}
+        chartVersion: {{ .Chart.Version | quote }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.global.harbor.host }}/qa-weishuang/logtest1:tag_log_test_2"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ .Values.container.port }}
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.container.port }}
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            periodSeconds: 15
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.container.port }}
+            initialDelaySeconds: 20
+            timeoutSeconds: 5
+            periodSeconds: 15
+            successThreshold: 1
+            failureThreshold: 5
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: op-env
+              mountPath: /data/apps/config
+            - name: logtest1-env
+              mountPath: /apps/env
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: app.properties
+            path: config/app.properties
+          name: op-env
+        name: op-env
+      - configMap:
+          name: logtest1-env
+          defaultMode: 420
+          items:
+            - key: env
+              path: env
+        name: configmap
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: {{ .Chart.Name }}
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+

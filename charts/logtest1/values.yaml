@@ -1,0 +1,87 @@
+# Default values for minio.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+global:
+  lion:
+    #是否更新lion数据
+    init: true
+    # lion url http://lion0001.eniot.io:8090
+    url: "@TODO"
+    # 更新lion数据需要的用户名
+    username: "@TODO"
+    # 更新lion数据需要的用户密码
+    password: "@TODO"
+    # 生产为 PRODUCT/PPE
+    env: "@TODO"
+    # lion上业务分支名称
+    product: "测试项目"
+  job:
+    enabled: true
+  harbor:
+    #发布环境所在harbor的地址 harbor.eniot.io
+    host: beta-kube-ingress-cn4.eniot.io
+  cluster:
+    #集群类型 值可选 kubernetes / ppe: openshift
+    type: "kubernetes"
+  # 用于确定route的后缀 alpha-k8s-cn4.eniot.io
+  host: harbor.eniot.io
+  #执行人信息
+  executor: "@TODO"
+  db:
+    #是否初始化db
+    init: false
+
+environment:
+  envName: "@TODO"
+
+lion:
+  init: true
+  disable:
+    update: false
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+service:
+  type: ClusterIP
+  port: 8080
+
+container:
+  port: 8080
+env:
+  access:
+    key: AKIAIOSFODNN7EXAMPLE
+  secret:
+    key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+ingress:
+  enabled: false
+  annotations: {}
+  host: chart-example.local
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+secret:
+  test: "xxxfdfsafds"
+tolerations: []
+ceph:
+  monitors:
+    one: "ceph9011:6789"
+    two: "ceph9011:6789"
+    three: "ceph9012:6789"
+affinity: {}
+persistence:
+  enabled: true
+  name: logtest1
+  accessMode: ReadWriteMany
+  size: 1Gi
