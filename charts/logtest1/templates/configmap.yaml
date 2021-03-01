@@ -7,4 +7,4 @@ metadata:
     "helm.sh/hook-weight": "8"
     "helm.sh/hook-delete-policy": before-hook-creation
 data:
-  env: {{ .Values.environment.envName}}
+  env: "{{ .Values.environment.envName}}"
