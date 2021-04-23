@@ -50,11 +50,6 @@ spec:
                   fieldPath: metadata.name
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: op-env
-              mountPath: /data/apps/config
-            - name: logtest1-env
-              mountPath: /apps/env
       volumes:
       - configMap:
           defaultMode: 420
@@ -63,13 +58,6 @@ spec:
             path: config/app.properties
           name: op-env
         name: op-env
-      - configMap:
-          name: logtest1-env
-          defaultMode: 420
-          items:
-            - key: env
-              path: env
-        name: configmap
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
