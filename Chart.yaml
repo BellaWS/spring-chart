@@ -2,4 +2,4 @@ description:  chart deploy project
 name:  spring-chart
 appVersion: 1.0.0
 apiVersion: v1
-version: 1.0.0-20210423-001-test
+version: 1.0.0-20210423-002-test
